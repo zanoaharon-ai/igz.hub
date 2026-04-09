@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IGZ CLIP LEAGUE - PRO PLAYER</title>
-    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <title>IGZ CLIP LEAGUE - SUCCESS</title>
     <style>
         :root { --primary: #05ea63; --bg: #0b0b0b; }
         body { background-color: var(--bg); color: white; font-family: system-ui, sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #game-container { width: 100%; max-width: 400px; text-align: center; }
+        #game-container { width: 100%; max-width: 400px; text-align: center; padding: 15px; }
         .progress-bar { color: var(--primary); font-weight: bold; margin-bottom: 15px; }
-        #clips-wrapper { position: relative; height: 70vh; margin-bottom: 20px; border-radius: 20px; overflow: hidden; border: 2px solid #222; background: #000; }
-        .clip-card { position: absolute; inset: 0; display: none; width: 100%; height: 100%; }
+        #clips-wrapper { position: relative; height: 72vh; margin-bottom: 20px; border-radius: 24px; overflow: hidden; border: 2px solid #222; background: #000; }
+        .clip-card { position: absolute; inset: 0; display: none; }
         .clip-card.active { display: block; }
-        .video-js { width: 100% !important; height: 100% !important; }
+        iframe { width: 100%; height: 100%; border: none; }
         .controls { display: flex; justify-content: center; gap: 40px; }
-        .btn { width: 80px; height: 80px; border-radius: 50%; border: none; font-size: 32px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; border: none; font-size: 32px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-l { background: #ff4444; color: white; }
         .btn-w { background: var(--primary); color: black; }
         #finish-screen { display: none; }
@@ -25,7 +24,7 @@
 
     <div id="game-container">
         <div id="game-ui">
-            <div class="progress-bar" id="counter">טוען נגן חיצוני...</div>
+            <div class="progress-bar" id="counter">בודק אימות מול Kick...</div>
             <div id="clips-wrapper"></div>
             <div class="controls">
                 <button class="btn btn-l" onclick="vote('L')">L</button>
@@ -34,14 +33,11 @@
         </div>
         <div id="finish-screen">
             <h1 style="color: var(--primary);">סיימת! 🔥</h1>
-            <p>ההצבעות שלך נקלטו במערכת.</p>
         </div>
     </div>
 
-    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     <script>
-        // חשוב מאוד: המזהים האלו הם רק המזהים. 
-        // הקוד למטה הופך אותם לכתובת וידאו ישירה שעוקפת את השגיאה.
+        // שים לב: ה-IDs האלו חייבים להיות קליפים שקיימים ב-Kick כרגע!
         const clipIDs = [
             'clip_01JRACH9Y5HGPW1A3K3SBN7P9Z',
             'clip_01JRACH9Y5HGPW1A3K3SBN7P9A'
@@ -51,36 +47,32 @@
 
         function init() {
             const wrapper = document.getElementById('clips-wrapper');
+            // כאן הסוד: Kick דורשת רק את ה-Hostname בלי שום קידומת
+            const domain = "zanoaharon-ai.github.io";
 
             clipIDs.forEach((id, index) => {
                 const card = document.createElement('div');
                 card.className = `clip-card ${index === 0 ? 'active' : ''}`;
                 card.id = `clip-${index}`;
                 
-                // אנחנו יוצרים נגן וידאו נקי, לא Iframe של קיק!
-                card.innerHTML = `
-                    <video id="video-${index}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto">
-                        <source src="https://stream.kick.com/clips/${id}/index.m3u8" type="application/x-mpegURL">
-                    </video>`;
+                // הכתובת הזו היא הכתובת הרשמית היחידה ש-Kick מאשרת היום
+                const kickUrl = `https://kick.com/embed/clips/${id}?autoplay=false&parent=${domain}`;
+                
+                card.innerHTML = `<iframe 
+                    src="${kickUrl}" 
+                    allowfullscreen="true"
+                    scrolling="no"
+                    allow="autoplay; fullscreen; picture-in-picture">
+                </iframe>`;
                 
                 wrapper.appendChild(card);
-                
-                // הפעלת הנגן עבור כל קליפ
-                if (window.videojs) {
-                    videojs(`video-${index}`);
-                }
             });
             updateCounter();
         }
 
         function vote(v) {
-            // עוצר את הוידאו הקודם כשעוברים הלאה
-            const oldPlayer = videojs(`video-${currentIndex}`);
-            oldPlayer.pause();
-
             document.getElementById(`clip-${currentIndex}`).classList.remove('active');
             currentIndex++;
-            
             if (currentIndex < clipIDs.length) {
                 document.getElementById(`clip-${currentIndex}`).classList.add('active');
                 updateCounter();
@@ -94,8 +86,7 @@
             document.getElementById('counter').innerText = `קליפ ${currentIndex + 1} מתוך ${clipIDs.length}`;
         }
 
-        // מחכה שהדף ייטען לגמרי
-        window.onload = init;
+        init();
     </script>
 </body>
 </html>
