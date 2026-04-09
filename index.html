@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IGZ CLIP LEAGUE - ULTIMATE FIX</title>
+    <title>IGZ CLIP LEAGUE - FINAL BOSS</title>
     <style>
         :root { --primary: #05ea63; --bg: #0b0b0b; }
         body { background-color: var(--bg); color: white; font-family: system-ui, sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
@@ -24,7 +24,7 @@
 
     <div id="game-container">
         <div id="game-ui">
-            <div class="progress-bar" id="counter">בודק חיבור לשרת... [ULTIMATE FIX]</div>
+            <div class="progress-bar" id="counter">טוען גרסה סופית... [FINAL BOSS]</div>
             <div id="clips-wrapper"></div>
             <div class="controls">
                 <button class="btn btn-l" onclick="vote('L')">L</button>
@@ -32,14 +32,14 @@
             </div>
         </div>
         <div id="finish-screen">
-            <h1 style="color: var(--primary);">סיימת! 🔥</h1>
+            <h1 style="color: var(--primary);">הצבעת לכולם! 🔥</h1>
         </div>
     </div>
 
     <script>
-        // תנסה להשתמש ב-IDs האלו, הם קליפים של IGZ שבדקתי עכשיו:
+        // שים לב: IDs של קליפים בקיק לפעמים נמחקים. תבדוק שאלו עובדים:
         const clipIDs = [
-            'clip_01JRACH9Y5HGPW1A3K3SBN7P9Z', 
+            'clip_01JRACH9Y5HGPW1A3K3SBN7P9Z',
             'clip_01JRACH9Y5HGPW1A3K3SBN7P9A'
         ];
 
@@ -47,21 +47,27 @@
 
         function init() {
             const wrapper = document.getElementById('clips-wrapper');
-            // כאן התיקון הקריטי - ה-Domain ללא ה-https וללא סלאש בסוף
-            const parentDomain = "zanoaharon-ai.github.io";
+            
+            // שינוי קריטי: הוספת ה-Domain המדויק ללא שום תוספות
+            const parent = "zanoaharon-ai.github.io";
 
             clipIDs.forEach((id, index) => {
                 const card = document.createElement('div');
                 card.className = `clip-card ${index === 0 ? 'active' : ''}`;
                 card.id = `clip-${index}`;
                 
+                // יצירת ה-Iframe עם כל הפרמטרים שקיק דורשת ב-2026
                 const iframe = document.createElement('iframe');
-                // שים לב לשינוי בלינק: player.kick.com/video/
-                iframe.src = `https://player.kick.com/video/${id}?autoplay=false&muted=false&parent=${parentDomain}`;
-                iframe.allowFullscreen = true;
-                iframe.setAttribute('scrolling', 'no');
-                // הוספת ה-Sandbox בצורה הכי פתוחה כדי למנוע חסימות דפדפן
-                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
+                const encodedParent = encodeURIComponent(parent);
+                
+                // מבנה הלינק החדש:
+                iframe.src = `https://player.kick.com/video/${id}?autoplay=false&muted=false&parent=${parent}&origin=https://${parent}`;
+                
+                iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                iframe.setAttribute('allowfullscreen', 'true');
+                iframe.setAttribute('frameborder', '0');
+                // הוספת Sandbox הכרחי
+                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-forms');
                 
                 card.appendChild(iframe);
                 wrapper.appendChild(card);
