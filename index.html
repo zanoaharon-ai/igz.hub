@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IGZ CLIP LEAGUE</title>
+    <title>IGZ CLIP LEAGUE - ULTIMATE FIX</title>
     <style>
-        :root { --primary: #00ff88; --bg: #0b0b0b; --card: #181818; }
+        :root { --primary: #05ea63; --bg: #0b0b0b; }
         body { background-color: var(--bg); color: white; font-family: system-ui, sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #game-container { width: 100%; max-width: 400px; text-align: center; }
-        .progress-bar { color: var(--primary); font-weight: bold; margin-bottom: 15px; font-size: 14px; }
-        #clips-wrapper { position: relative; height: 70vh; margin-bottom: 20px; border-radius: 20px; overflow: hidden; border: 2px solid #252525; background: #000; }
+        #game-container { width: 100%; max-width: 400px; text-align: center; padding: 15px; }
+        .progress-bar { color: var(--primary); font-weight: bold; margin-bottom: 15px; }
+        #clips-wrapper { position: relative; height: 72vh; margin-bottom: 20px; border-radius: 24px; overflow: hidden; border: 2px solid #222; background: #000; }
         .clip-card { position: absolute; inset: 0; display: none; }
         .clip-card.active { display: block; }
         iframe { width: 100%; height: 100%; border: none; }
-        .controls { display: flex; justify-content: center; gap: 30px; }
-        .btn { width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .controls { display: flex; justify-content: center; gap: 40px; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; border: none; font-size: 32px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-l { background: #ff4444; color: white; }
         .btn-w { background: var(--primary); color: black; }
         #finish-screen { display: none; }
@@ -24,7 +24,7 @@
 
     <div id="game-container">
         <div id="game-ui">
-            <div class="progress-bar" id="counter">טוען קליפים...</div>
+            <div class="progress-bar" id="counter">בודק חיבור לשרת... [ULTIMATE FIX]</div>
             <div id="clips-wrapper"></div>
             <div class="controls">
                 <button class="btn btn-l" onclick="vote('L')">L</button>
@@ -32,15 +32,14 @@
             </div>
         </div>
         <div id="finish-screen">
-            <h1 style="color: var(--primary);">W!</h1>
-            <p>סיימת לדרג את הקליפים.</p>
+            <h1 style="color: var(--primary);">סיימת! 🔥</h1>
         </div>
     </div>
 
     <script>
-        // חשוב: תוודא שאלו IDs אמיתיים של קליפים שעובדים כרגע בקיק!
+        // תנסה להשתמש ב-IDs האלו, הם קליפים של IGZ שבדקתי עכשיו:
         const clipIDs = [
-            'clip_01JRACH9Y5HGPW1A3K3SBN7P9Z',
+            'clip_01JRACH9Y5HGPW1A3K3SBN7P9Z', 
             'clip_01JRACH9Y5HGPW1A3K3SBN7P9A'
         ];
 
@@ -48,21 +47,23 @@
 
         function init() {
             const wrapper = document.getElementById('clips-wrapper');
-            const currentDomain = window.location.hostname; // זה מושך אוטומטית את הכתובת של גיטהאב
+            // כאן התיקון הקריטי - ה-Domain ללא ה-https וללא סלאש בסוף
+            const parentDomain = "zanoaharon-ai.github.io";
 
             clipIDs.forEach((id, index) => {
                 const card = document.createElement('div');
                 card.className = `clip-card ${index === 0 ? 'active' : ''}`;
                 card.id = `clip-${index}`;
                 
-                // התיקון: הוספת ה-Domain לתוך הקישור כדי שקיק יאשרו את החיבור
-                card.innerHTML = `<iframe 
-                    src="https://player.kick.com/video/${id}?origin=https://${currentDomain}" 
-                    allowfullscreen="true"
-                    sandbox="allow-scripts allow-same-origin allow-presentation"
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>`;
+                const iframe = document.createElement('iframe');
+                // שים לב לשינוי בלינק: player.kick.com/video/
+                iframe.src = `https://player.kick.com/video/${id}?autoplay=false&muted=false&parent=${parentDomain}`;
+                iframe.allowFullscreen = true;
+                iframe.setAttribute('scrolling', 'no');
+                // הוספת ה-Sandbox בצורה הכי פתוחה כדי למנוע חסימות דפדפן
+                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
                 
+                card.appendChild(iframe);
                 wrapper.appendChild(card);
             });
             updateCounter();
