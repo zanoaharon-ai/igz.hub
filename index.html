@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGZ CLIP LEAGUE</title>
+    <style>
+        :root { --primary: #00ff88; --bg: #050505; --card: #121212; }
+        body { background-color: var(--bg); color: white; font-family: system-ui, sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        #game-container { width: 100%; max-width: 420px; text-align: center; padding: 20px; }
+        .progress-bar { color: var(--primary); font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        #clips-wrapper { position: relative; height: 68vh; margin-bottom: 25px; background: #000; border-radius: 20px; border: 2px solid #222; }
+        .clip-card { position: absolute; inset: 0; display: none; flex-direction: column; animation: popUp 0.4s ease; }
+        .clip-card.active { display: flex; }
+        @keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 20px; }
+        .controls { display: flex; justify-content: center; gap: 40px; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; border: none; font-size: 32px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+        .btn-l { background: #ff3e3e; color: white; }
+        .btn-w { background: var(--primary); color: black; }
+        .btn:hover { transform: scale(1.1); }
+        #finish-screen { display: none; text-align: center; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="game-container">
+        <div id="game-ui">
+            <div class="progress-bar" id="counter">טוען קליפים...</div>
+            <div id="clips-wrapper"></div>
+            <div class="controls">
+                <button class="btn btn-l" onclick="vote('L')">L</button>
+                <button class="btn btn-w" onclick="vote('W')">W</button>
+            </div>
+        </div>
+        <div id="finish-screen">
+            <h1 style="color: var(--primary); font-size: 40px;">W MOMENT!</h1>
+            <p>סיימת לדרג את הקליפים.</p>
+        </div>
+    </div>
+
+    <script>
+        // שים כאן IDs אמיתיים של קליפים (מהסוף של הלינק בקיק)
+        const clipIDs = [
+            'clip_01JRACH9Y5HGPW1A3K3SBN7P9Z',
+            'clip_01JRACH9Y5HGPW1A3K3SBN7P9A'
+        ];
+
+        let currentIndex = 0;
+
+        function init() {
+            const wrapper = document.getElementById('clips-wrapper');
+            clipIDs.forEach((id, index) => {
+                const card = document.createElement('div');
+                card.className = `clip-card ${index === 0 ? 'active' : ''}`;
+                card.id = `clip-${index}`;
+                // הכתובת הזו עובדת רק כשהאתר באוויר ב-HTTPS
+                card.innerHTML = `<iframe src="https://player.kick.com/video/${id}" allowfullscreen="true"></iframe>`;
+                wrapper.appendChild(card);
+            });
+            updateCounter();
+        }
+
+        function vote(type) {
+            document.getElementById(`clip-${currentIndex}`).classList.remove('active');
+            currentIndex++;
+            if (currentIndex < clipIDs.length) {
+                document.getElementById(`clip-${currentIndex}`).classList.add('active');
+                updateCounter();
+            } else {
+                document.getElementById('game-ui').style.display = 'none';
+                document.getElementById('finish-screen').style.display = 'block';
+            }
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').innerText = `קליפ ${currentIndex + 1} מתוך ${clipIDs.length}`;
+        }
+
+        init();
+    </script>
+</body>
+</html>
